@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PagoDTO {
+public class  PagoDTO {
 
     private Long id;  // ID del pago
     private Long pedidoId;  // ID del pedido asociado

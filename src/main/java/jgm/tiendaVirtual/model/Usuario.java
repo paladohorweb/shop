@@ -25,7 +25,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
+    private String nombre;
     
     @JsonIgnore
     @NotBlank(message = "El email es obligatorio")
@@ -47,7 +47,7 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pedido> pedidos = new ArrayList<>();
 
-  
-   
+
+
 }
 

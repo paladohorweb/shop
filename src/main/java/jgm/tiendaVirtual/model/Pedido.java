@@ -39,7 +39,14 @@ public class Pedido {
     @JsonManagedReference
     private Set<DetallePedido> detalles = new HashSet<>();
 
+
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
+    private Factura factura;
+
     private BigDecimal total; // 💲 Total del pedido
+
+    @Column(name = "metodo_pago")
+    private String metodoPago;
 
     /**
      * 🔹 Método para calcular el total del pedido

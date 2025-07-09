@@ -1,6 +1,7 @@
 package jgm.tiendaVirtual.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -26,6 +27,7 @@ public class DetallePedido {
 
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
+    @JsonIgnoreProperties("detalles") // 👈 Evita recursividad si Producto tiene Set<DetallePedido>
     private Producto producto;
      
     

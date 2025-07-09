@@ -51,13 +51,14 @@ public class FacturaService {
         factura.setDetalles(detalles);
 
         // Total y IVA
-        BigDecimal total = detalles.stream()
+        BigDecimal subtotal = detalles.stream()
                 .map(DetalleFactura::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal iva = total.multiply(BigDecimal.valueOf(0.19)); // 19% IVA
+        BigDecimal iva = subtotal.multiply(BigDecimal.valueOf(0.19)); // 19% IVA
+        BigDecimal totalConIva = subtotal.add(iva);
 
-        factura.setTotal(total);
+        factura.setTotal(totalConIva);
         factura.setIva(iva);
 
         // Guardar factura
@@ -92,10 +93,10 @@ public class FacturaService {
                 factura.getId(),
                 factura.getNumero(),
                 factura.getFechaEmision(),
-                factura.getUsuario().getNombre(),
+                factura.getUsuario() != null ? factura.getUsuario().getNombre() : "N/A",
                 factura.getTotal(),
                 factura.getIva(),
-                factura.getMetodoPago(),
+                factura.getMetodoPago() != null ? factura.getMetodoPago().toString() : "N/A",
                 detallesDTO
         );
     }

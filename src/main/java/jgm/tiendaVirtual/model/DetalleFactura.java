@@ -1,5 +1,6 @@
 package jgm.tiendaVirtual.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -24,5 +25,6 @@ public class DetalleFactura {
 
     @ManyToOne
     @JoinColumn(name = "factura_id")
+    @JsonBackReference // 👈 Evita la recursión al serializar
     private Factura factura;
 }

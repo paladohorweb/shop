@@ -1,5 +1,7 @@
 package jgm.tiendaVirtual.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,13 +36,16 @@ public class Factura {
 
     private BigDecimal iva;
 
+    @Column(name = "metodo_pago")
     private String metodoPago;
 
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // 👈 Controla el lado "padre" de la relación
     private List<DetalleFactura> detalles;
 
     @OneToOne
     @JoinColumn(name = "pedido_id")
+    @JsonIgnoreProperties("factura") // 👈 evita recursión inversa si se usa Pedido aquí
     private Pedido pedido;
 
 

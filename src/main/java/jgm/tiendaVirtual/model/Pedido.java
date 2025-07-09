@@ -1,5 +1,6 @@
 package jgm.tiendaVirtual.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -26,7 +27,7 @@ public class Pedido {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id")
     @JsonIgnoreProperties("pedidos")
     private Usuario usuario;
 
@@ -41,6 +42,7 @@ public class Pedido {
 
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @JsonIgnore // 👈 evita que intente serializar la factura dentro del pedido
     private Factura factura;
 
     private BigDecimal total; // 💲 Total del pedido

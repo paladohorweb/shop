@@ -1,7 +1,8 @@
 package jgm.tiendaVirtual.controller;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
+import java.util.*;
+
 import jgm.tiendaVirtual.dto.PedidoDTO;
 import jgm.tiendaVirtual.model.Pedido;
 import jgm.tiendaVirtual.service.PedidoService;
@@ -11,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import jgm.tiendaVirtual.dto.DetallePedidoDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -187,4 +185,40 @@ public class PedidoController {
         }
     }
     //nueva funcionalidad en process
+
+    @PutMapping("/pagar/{id}")
+    public ResponseEntity<Map<String, Object>> pagarPedido(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            pedidoService.pagarPedido(id);
+            response.put("message", "Pedido pagado correctamente");
+            response.put("status", "success");
+            return ResponseEntity.ok()
+                    .header("Content-Type", "application/json")
+                    .body(response); // Asegura tipo JSON
+        } catch (IllegalStateException e) {
+            response.put("message", e.getMessage());
+            response.put("status", "error");
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("message", "Error inesperado al pagar el pedido");
+            response.put("status", "error");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @PutMapping("/cancelar/{id}")
+    public ResponseEntity<Map<String, Object>> cancelarPedido(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            pedidoService.cancelarPedido(id);
+            response.put("message", "Pedido cancelado correctamente");
+            response.put("status", "success");
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            response.put("message", e.getMessage());
+            response.put("status", "error");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

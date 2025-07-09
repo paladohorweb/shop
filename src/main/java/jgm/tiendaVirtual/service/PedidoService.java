@@ -165,5 +165,32 @@ public class PedidoService {
     public Optional<Pedido> obtenerPedidoPorId(Long idPedido) {
     return pedidoRepository.findById(idPedido);
 }
+
+    @Transactional
+    public void pagarPedido(Long pedidoId) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        if (!pedido.getEstado().equals(EstadoPedido.PENDIENTE)) {
+            throw new IllegalStateException("Solo se pueden pagar pedidos pendientes");
+        }
+
+        pedido.setEstado(EstadoPedido.PAGADO);
+        pedidoRepository.save(pedido);
+    }
+
+
+    @Transactional
+    public void cancelarPedido(Long pedidoId) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        if (!pedido.getEstado().equals(EstadoPedido.PENDIENTE)) {
+            throw new IllegalStateException("Solo se pueden cancelar pedidos pendientes");
+        }
+
+        pedido.setEstado(EstadoPedido.CANCELADO);
+        pedidoRepository.save(pedido);
+    }
 }
 

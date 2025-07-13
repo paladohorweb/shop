@@ -82,7 +82,7 @@ public class ProductoController {
     }
 
 
-    @GetMapping("/destacados")
+    @GetMapping("/productos/destacados")
     @Transactional
     public List<Producto> obtenerDestacados() {
         return productoService.obtenerProductosDestacados();

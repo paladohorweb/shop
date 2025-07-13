@@ -1,5 +1,7 @@
 package jgm.tiendaVirtual.service;
 
+import jgm.tiendaVirtual.dto.RegisterRequest;
+import jgm.tiendaVirtual.model.Rol;
 import jgm.tiendaVirtual.model.Usuario;
 import jgm.tiendaVirtual.security.JwtUtil;
 import jgm.tiendaVirtual.repository.UsuarioRepository;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import jgm.tiendaVirtual.dto.UsuarioDTO;
+
 
 @Service
 public class AuthService {
@@ -39,7 +42,7 @@ public Map<String, Object> login(String email, String password) {
     System.out.println("🔹 Token generado: " + token);
 
     // ✅ Devuelve también el ID del usuario (útil en frontend)
-  UsuarioDTO usuarioDTO = new UsuarioDTO(usuario.getId(), usuario.getEmail(), usuario.getRol());
+  UsuarioDTO usuarioDTO = new UsuarioDTO(usuario.getId(), usuario.getEmail(), usuario.getNombre(), usuario.getRol());
 
 return Map.of(
     "token", token,
@@ -48,6 +51,24 @@ return Map.of(
     "roles", roles
 );
 }
+
+    @Transactional
+    public UsuarioDTO registrarUsuario(RegisterRequest request) {
+        // Validar si ya existe el email
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("El email ya está registrado");
+        }
+
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setNombre(request.getNombre());
+        nuevoUsuario.setEmail(request.getEmail());
+        nuevoUsuario.setPassword(passwordEncoder.encode(request.getPassword()));
+        nuevoUsuario.setRol(Rol.ROLE_USER); // Puedes ajustar si quieres ROLE_ADMIN manual
+
+        Usuario guardado = usuarioRepository.save(nuevoUsuario);
+
+        return new UsuarioDTO(guardado.getId(), guardado.getEmail(), guardado.getNombre(), guardado.getRol());
+    }
 
 
 }

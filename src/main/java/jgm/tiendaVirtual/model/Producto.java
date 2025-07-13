@@ -38,5 +38,9 @@ public class Producto {
     @Column(nullable = false)
     private Integer stock;
 
+    @Column(name = "imagen_url")
     private String imagenUrl;
+
+    @Column(nullable = false)
+    private boolean destacado = false;
 }

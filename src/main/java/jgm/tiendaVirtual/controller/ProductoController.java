@@ -80,4 +80,14 @@ public class ProductoController {
             return ResponseEntity.badRequest().body("Error al eliminar producto: " + e.getMessage());
         }
     }
+
+
+    @GetMapping("/destacados")
+    @Transactional
+    public List<Producto> obtenerDestacados() {
+        return productoService.obtenerProductosDestacados();
+    }
+
 }
+
+

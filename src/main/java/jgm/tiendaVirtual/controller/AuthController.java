@@ -1,6 +1,8 @@
 package jgm.tiendaVirtual.controller;
 
 import jakarta.validation.Valid;
+import jgm.tiendaVirtual.dto.RegisterRequest;
+import jgm.tiendaVirtual.dto.UsuarioDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -35,6 +37,20 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Error en la solicitud"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error del servidor: " + e.getMessage()));
+        }
+    }
+
+
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registrar(@Valid @RequestBody RegisterRequest request) {
+        try {
+            UsuarioDTO nuevoUsuario = authService.registrarUsuario(request);
+            return ResponseEntity.ok(nuevoUsuario);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error interno del servidor"));
         }
     }
 }

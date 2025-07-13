@@ -68,4 +68,9 @@ public class ProductoService {
         }
         productoRepository.deleteById(id);
     }
+
+    @Transactional
+    public List<Producto> obtenerProductosDestacados() {
+        return productoRepository.findByDestacadoTrue();
+    }
 }

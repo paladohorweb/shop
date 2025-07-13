@@ -47,7 +47,7 @@ public class UsuarioService {
 
     /** 🔹 Método para convertir Usuario en UsuarioDTO */
     private UsuarioDTO convertirADTO(Usuario usuario) {
-        return new UsuarioDTO(usuario.getId(), usuario.getEmail(), usuario.getRol());
+        return new UsuarioDTO(usuario.getId(), usuario.getEmail(), usuario.getNombre(), usuario.getRol());
     }
 }
 

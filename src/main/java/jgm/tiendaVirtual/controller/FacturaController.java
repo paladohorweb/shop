@@ -3,6 +3,7 @@ package jgm.tiendaVirtual.controller;
 import jgm.tiendaVirtual.dto.FacturaDTO;
 import jgm.tiendaVirtual.service.FacturaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class FacturaController {
     }
 
     @GetMapping("/pedido/{pedidoId}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public FacturaDTO obtenerPorPedido(@PathVariable Long pedidoId) {
         return facturaService.obtenerFacturaPorPedido(pedidoId);
     }

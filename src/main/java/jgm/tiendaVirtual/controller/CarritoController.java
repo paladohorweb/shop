@@ -108,6 +108,24 @@ public class CarritoController {
 
         return ResponseEntity.badRequest().build();
     }
+
+    // 🔹 Obtener cantidad total de productos en el carrito
+    @GetMapping("/cantidad/{usuarioId}")
+    public ResponseEntity<Integer> obtenerCantidadTotal(@PathVariable Long usuarioId) {
+        Optional<Carrito> carritoOpt = carritoRepository.findByUsuarioId(usuarioId);
+
+        if (carritoOpt.isEmpty()) {
+            return ResponseEntity.ok(0); // Carrito vacío o inexistente
+        }
+
+        Carrito carrito = carritoOpt.get();
+        int cantidadTotal = carrito.getItems().stream()
+                .mapToInt(CarritoItem::getCantidad)
+                .sum();
+
+        return ResponseEntity.ok(cantidadTotal);
+    }
+
 }
     
     

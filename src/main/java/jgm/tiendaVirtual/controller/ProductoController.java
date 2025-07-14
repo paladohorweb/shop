@@ -1,6 +1,7 @@
 package jgm.tiendaVirtual.controller;
 
 import jgm.tiendaVirtual.model.Producto;
+import jgm.tiendaVirtual.repository.ProductoRepository;
 import jgm.tiendaVirtual.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,10 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
+
+
+    @Autowired
+    private ProductoRepository productoRepository;
 
     /** 🔹 Agregar un producto
      * @param producto
@@ -82,10 +87,10 @@ public class ProductoController {
     }
 
 
-    @GetMapping("/productos/destacados")
-    @Transactional
-    public List<Producto> obtenerDestacados() {
-        return productoService.obtenerProductosDestacados();
+    @GetMapping("/destacados")
+    public ResponseEntity<List<Producto>> obtenerDestacados() {
+        List<Producto> destacados = productoRepository.findByDestacadoTrue();
+        return ResponseEntity.ok(destacados);
     }
 
 }

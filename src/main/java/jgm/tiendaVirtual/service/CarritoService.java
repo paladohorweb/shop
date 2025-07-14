@@ -215,6 +215,16 @@ private Carrito obtenerCarritoEntidad(Long usuarioId) {
 
         return new CarritoDTO(carrito.getUsuario().getId(), carrito.getTotal(), itemsDTO);
     }
+
+    /** 🔹 Obtener la cantidad total de productos en el carrito */
+    public int obtenerCantidadTotal(Long usuarioId) {
+        Carrito carrito = obtenerCarritoEntidad(usuarioId);
+        return carrito.getItems().stream()
+                .mapToInt(CarritoItem::getCantidad)
+                .sum();
+    }
+
+
 }
 
 

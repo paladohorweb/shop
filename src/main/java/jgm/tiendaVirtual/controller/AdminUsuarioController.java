@@ -6,6 +6,10 @@ import jgm.tiendaVirtual.model.Rol;
 import jgm.tiendaVirtual.repository.UsuarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -43,5 +47,22 @@ public class AdminUsuarioController {
         dto.setEmail(u.getEmail());
         dto.setRol(u.getRol());
         return dto;
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        Usuario usuario = usuarioRepo.findById(id).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // No permitir que se borre a sí mismo
+        if (usuario.getEmail().equalsIgnoreCase(userDetails.getUsername())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        usuarioRepo.delete(usuario);
+        return ResponseEntity.noContent().build();
     }
 }

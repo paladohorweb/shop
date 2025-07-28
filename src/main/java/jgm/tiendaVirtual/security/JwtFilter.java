@@ -4,26 +4,27 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import jgm.tiendaVirtual.service.CustomUserDetailsService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import org.springframework.security.core.context.SecurityContext;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
     private static final Logger logger = Logger.getLogger(JwtFilter.class.getName());
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -36,7 +37,6 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
 
             try {
-                // ✅ Validar el token antes de continuar
                 if (!jwtUtil.validarToken(token)) {
                     logger.warning("❌ Token inválido.");
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Acceso no autorizado.");
@@ -44,26 +44,21 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
 
                 String email = jwtUtil.extraerEmail(token);
-                List<String> roles = jwtUtil.extraerRoles(token);
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    // 🔽 Cargar el UserDetails completo desde DB
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                if (email != null && !roles.isEmpty()) {
-                    // 🔹 Asegurar que los roles incluyen "ROLE_"
-                    List<SimpleGrantedAuthority> authorities = roles.stream()
-                            .map(role -> new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role))
-                            .collect(Collectors.toList());
+                    if (jwtUtil.validarToken(token)) {
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities()
+                                );
 
-                    // Crear la autenticación en el contexto de seguridad
-                    UsernamePasswordAuthenticationToken authToken
-                            = new UsernamePasswordAuthenticationToken(email, null, authorities);
-                    SecurityContext context = SecurityContextHolder.createEmptyContext();
-                    context.setAuthentication(authToken);
-                    SecurityContextHolder.setContext(context);
-                    logger.info("✅ Usuario autenticado: " + email);
-                    logger.info("✅ Roles asignados: " + authorities);
-                } else {
-                    logger.warning("⚠️ Token válido pero sin información de usuario.");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Acceso no autorizado.");
-                    return;
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        logger.info("✅ Usuario autenticado: " + email);
+                    }
                 }
 
             } catch (Exception e) {

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -29,9 +30,24 @@ public class CreditoService {
         Producto producto = productoRepository.findById(dto.getProductoId())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        Pedido pedido = pedidoRepository.findById(dto.getPedidoId())
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+//        Pedido pedido = pedidoRepository.findById(dto.getPedidoId())
+//                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        // 1️⃣ Crear el pedido asociado
+        Pedido pedido = new Pedido();
+        pedido.setUsuario(usuario);
+        pedido.setEstado(EstadoPedido.PENDIENTE);
+        pedido.setFechaPedido(LocalDateTime.now());
 
+        // 2️⃣ Crear el detalle del pedido (solo un producto, cantidad 1)
+        DetallePedido detalle = new DetallePedido();
+        detalle.setProducto(producto);
+        detalle.setCantidad(1);
+        detalle.setPrecioUnitario(producto.getPrecio());
+        detalle.setPedido(pedido); // asociar al pedido
+
+        pedido.setDetalles(new HashSet<>(List.of(detalle)));
+
+        pedidoRepository.save(pedido); // guardar pedido con su detalle
         BigDecimal interes = new BigDecimal("0.12");
         BigDecimal montoFinal = dto.getMontoSolicitado().multiply(BigDecimal.ONE.add(interes));
 

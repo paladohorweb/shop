@@ -14,5 +14,5 @@ public class SolicitudCreditoDTO {
     private Long productoId;
     private BigDecimal montoSolicitado;
     private Integer cuotas;
-    private Long pedidoId;
+   // private Long pedidoId;
 }

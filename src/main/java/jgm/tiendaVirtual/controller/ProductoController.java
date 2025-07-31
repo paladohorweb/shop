@@ -93,6 +93,11 @@ public class ProductoController {
         return ResponseEntity.ok(destacados);
     }
 
+    @GetMapping("/mas-vendidos")
+    public List<Producto> obtenerMasVendidos() {
+        return productoService.obtenerProductosMasVendidos();
+    }
+
 }
 
 

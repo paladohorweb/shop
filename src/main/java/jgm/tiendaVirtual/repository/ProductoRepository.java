@@ -13,5 +13,7 @@ import java.util.List;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
-    List<Producto> findByDestacadoTrue(); // ✅ Devuelve productos donde destacado = true
+    List<Producto> findByDestacadoTrue();// ✅ Devuelve productos donde destacado = true
+
+    List<Producto> findTop10ByOrderByCantidadVendidaDesc();
 }

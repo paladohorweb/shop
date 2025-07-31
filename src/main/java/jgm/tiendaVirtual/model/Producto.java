@@ -43,4 +43,9 @@ public class Producto {
 
     @Column(nullable = false)
     private boolean destacado = false;
+
+
+    @NotNull
+    @Positive
+    private int cantidadVendida;
 }

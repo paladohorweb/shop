@@ -73,4 +73,10 @@ public class ProductoService {
     public List<Producto> obtenerProductosDestacados() {
         return productoRepository.findByDestacadoTrue();
     }
+
+
+    @Transactional
+    public List<Producto> obtenerProductosMasVendidos() {
+        return productoRepository.findTop10ByOrderByCantidadVendidaDesc();
+    }
 }
